@@ -131,24 +131,26 @@ int client_receive_transmission(config_t *cfg){
     //アドレスファミリー・ポート番号・IPアドレス設定       設定ファイルを適用する部分
     memset(&client_addr, '\0' ,sizeof(client_addr));
     client_addr.sin_family = AF_INET;
-    client_addr.sin_port = htons(port);
+   // client_addr.sin_port = htons(port);
+        client_addr.sin_port = htons(port);
     client_addr.sin_addr = servhost;
     
     ret = connect( connecting_socket, (struct sockaddr *)&client_addr, sizeof(client_addr) );
     if ( ret < 0 ){
-        close( connecting_socket );
         return ERROR_CONNECT;
     }
     
     receive_header(connecting_socket,connect_error);
     if ( strncmp(connect_error,"503",3) == 0 ){
+        close(connecting_socket); 
         return ERROR_TOO_MANY_CONNECT;
     }
     
     printf("サーバーに接続しました。\n");
     transmission_filename(connecting_socket);
     receive_filedata(connecting_socket, receive_data);
-
+    
+    
     close( connecting_socket );
 
     return NO_ERROR;
