@@ -68,10 +68,10 @@ int server_main(){
           //thread.state(1:接続中 0:接続待機 -1:ヒマ)
           state_check = 0;
           for (i=0 ; i < CONNECT_MAX ; i++){
-               if (thread[i].state == 1 ){
+               if (thread[i].state != -1 ){
                     state_check ++;
                }
-               printf("%d.",thread[i].state);   //デバッグ用
+//               printf("%d.",thread[i].state);   //デバッグ用
           }
           
           printf("接続数:(%d/%d)\n",state_check,CONNECT_MAX);
@@ -114,6 +114,7 @@ int server_main(){
 //子スレッドでの処理
 void connect_thread(threadinfo_t *thread){
      int err;
+     int state_check;
      
      while (1){
           thread->state = 1;                                //スレッドのステータスを接続中に変える
@@ -127,6 +128,16 @@ void connect_thread(threadinfo_t *thread){
           printf("接続が切れました。\n");
           break;
      }
+     //thread.state(1:接続中 0:接続待機 -1:ヒマ)
+     state_check = 0;
+     for (int i=0 ; i < CONNECT_MAX ; i++){
+          if (thread[i].state == 1 ){
+               state_check ++;
+          }
+//          printf("%d.",thread[i].state);
+     }
+     
+     printf("接続数:(%d/%d)\n",state_check,CONNECT_MAX);
 }
 
 int server_receive_transmission(int socketid){
